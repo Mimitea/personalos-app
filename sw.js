@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v14-delsub';
+const CACHE_NAME = 'personalos-v15-github';
 const ASSETS = [
   '/personalos.html',
   './manifest.json',

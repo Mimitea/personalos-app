@@ -615,11 +615,11 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 <script>
 // ============ 初始数据 ============
 const INITIAL_DATA = {
-  version: "4.2.0",
+  version: "4.3.0",
   createdAt: "2026-07-30",
   categories: [
     {
-      id: "chinese", name: "语文", icon: "/icons/pixel/png/1.png", order: 1,
+      id: "chinese", name: "语文", icon: "./icons/pixel/png/1.png", order: 1,
       subcategories: [
         { id: "ch-recite", name: "语文背诵", tasks: [
             "《三峡》","《答谢中书书》","《记承天寺夜游》","《与朱元思书》","《野望》","《黄鹤楼》","《使至塞上》","《渡荆门送别》","《钱塘湖春行》","《庭中有奇树》","《龟虽寿》","《赠从弟》","《梁甫行》","《得道多助，失道寡助》","《富贵不能淫》","《生于忧患，死于安乐》","《愚公移山》","《饮酒（其五）》","《春望》","《雁门太守行》","《赤壁》","《渔家傲》","《浣溪沙》","《采桑子》","《相见欢》","《如梦令》"
@@ -640,14 +640,14 @@ const INITIAL_DATA = {
       ]
     },
     {
-      id: "math", name: "数学", icon: "/icons/pixel/png/2.png", order: 2,
+      id: "math", name: "数学", icon: "./icons/pixel/png/2.png", order: 2,
       subcategories: [
         { id: "ma-xinsilu", name: "《数学新思路》", tasks: [] },
         { id: "ma-quanquan", name: "《全等之魂》", tasks: [] }
       ]
     },
     {
-      id: "english", name: "英语", icon: "/icons/pixel/png/3.png", order: 3,
+      id: "english", name: "英语", icon: "./icons/pixel/png/3.png", order: 3,
       subcategories: [
         { id: "en-kaogang", name: "《初中考纲默写》", tasks: [] },
         { id: "en-cihui60", name: "《高考核心词汇60篇》", tasks: [] },
@@ -657,22 +657,22 @@ const INITIAL_DATA = {
       ]
     },
     {
-      id: "physics", name: "物理", icon: "/icons/pixel/png/4.png", order: 4,
+      id: "physics", name: "物理", icon: "./icons/pixel/png/4.png", order: 4,
       subcategories: [ { id: "ph-ledu", name: "物理乐读课", tasks: [] } ]
     },
     {
-      id: "chemistry", name: "化学", icon: "/icons/pixel/png/5.png", order: 5,
+      id: "chemistry", name: "化学", icon: "./icons/pixel/png/5.png", order: 5,
       subcategories: [ { id: "ch-ledu", name: "化学乐读课", tasks: [] } ]
     },
     {
-      id: "other", name: "其他", icon: "/icons/pixel/png/6.png", order: 6,
+      id: "other", name: "其他", icon: "./icons/pixel/png/6.png", order: 6,
       subcategories: []
     }
   ]
 };
 
 // ============ 状态 ============
-const STORAGE_KEY = 'personalos_summer_v4_2';
+const STORAGE_KEY = 'personalos_summer_v4_3';
 let state = loadState();
 let currentFilter = 'overview';
 let planSelections = new Set();
@@ -685,7 +685,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.categories && parsed.version === "4.2.0") return parsed;
+      if (parsed && parsed.categories && parsed.version === "4.3.0") return parsed;
     }
   } catch(e) {}
   return JSON.parse(JSON.stringify(INITIAL_DATA));
