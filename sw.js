@@ -1,11 +1,11 @@
-const CACHE_NAME = 'personalos-v20-title';
+const CACHE_NAME = 'personalos-v21-safesave';
+
 const ASSETS = [
-  '/personalos.html',
+  './index.html',
   './manifest.json',
+  './icons/icon-180-v2.png',
   './icons/icon-192-v2.png',
   './icons/icon-512-v2.png',
-  './icons/icon-180-v2.png',
-  './icons/icon-1024.png',
   './icons/pixel/png/title.png',
   './icons/pixel/png/1.png',
   './icons/pixel/png/2.png',
@@ -15,7 +15,7 @@ const ASSETS = [
   './icons/pixel/png/6.png'
 ];
 
-// 安装时缓存核心资源
+// 安装时缓存核心资源，但不清除旧缓存
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -24,23 +24,19 @@ self.addEventListener('install', event => {
   );
 });
 
-// 激活时清理旧缓存
+// 激活时不清理旧缓存，避免数据丢失
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+    self.clients.claim()
   );
 });
 
-// 网络优先 + 离线回退
+// 网络优先策略，确保拿到最新页面
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // 缓存成功响应的副本
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, clone);

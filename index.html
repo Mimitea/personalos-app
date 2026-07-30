@@ -691,7 +691,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 <script>
 // ============ 初始数据 ============
 const INITIAL_DATA = {
-  version: "4.2.0",
+  version: "4.4.0",
   createdAt: "2026-07-30",
   categories: [
     {
@@ -756,17 +756,43 @@ let expandedCats = new Set();
 let expandedSubs = new Set();
 let planMode = false; // 是否在规划选择模式
 
+// 多重存储备份，防止 iOS PWA 更新时丢失数据
+const BACKUP_KEYS = [STORAGE_KEY, 'personalos_backup_1', 'personalos_backup_2', 'personalos_global'];
+
 function loadState() {
+  // 尝试从多个位置读取数据
+  for (const key of BACKUP_KEYS) {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.categories && parsed.categories.length > 0) {
+          // 版本不同也兼容，只要数据结构有效就用
+          return parsed;
+        }
+      }
+    } catch(e) {}
+  }
+  // 尝试从 sessionStorage 恢复
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && parsed.categories && parsed.version === "4.2.0") return parsed;
+    const session = sessionStorage.getItem(STORAGE_KEY);
+    if (session) {
+      const parsed = JSON.parse(session);
+      if (parsed && parsed.categories) return parsed;
     }
   } catch(e) {}
   return JSON.parse(JSON.stringify(INITIAL_DATA));
 }
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function saveState() {
+  const data = JSON.stringify(state);
+  // 同时写入多个 key，防止某个被清除
+  BACKUP_KEYS.forEach(key => {
+    try { localStorage.setItem(key, data); } catch(e) {}
+  });
+  // 也写入 sessionStorage
+  try { sessionStorage.setItem(STORAGE_KEY, data); } catch(e) {}
+}
 
 function getAllTasks() {
   const tasks = [];
