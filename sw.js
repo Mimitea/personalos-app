@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v21-safesave';
+const CACHE_NAME = 'personalos-v22-fixdata';
 
 const ASSETS = [
   './index.html',

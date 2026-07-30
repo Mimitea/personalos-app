@@ -691,7 +691,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 <script>
 // ============ 初始数据 ============
 const INITIAL_DATA = {
-  version: "4.4.0",
+  version: "4.2.0",
   createdAt: "2026-07-30",
   categories: [
     {
@@ -748,7 +748,9 @@ const INITIAL_DATA = {
 };
 
 // ============ 状态 ============
-const STORAGE_KEY = 'personalos_summer_v4_2';
+// STORAGE_KEY 永远不要改，改了就会丢数据
+const STORAGE_KEY = 'personalos_summer_data';
+const BACKUP_KEYS = [STORAGE_KEY, 'personalos_summer_v4_3_3', 'personalos_summer_v4_3_2', 'personalos_summer_v4_3_1', 'personalos_summer_v4_3', 'personalos_summer_v4_2', 'personalos_summer_v4_1', 'personalos_backup_1', 'personalos_backup_2', 'personalos_global'];
 let state = loadState();
 let currentFilter = 'overview';
 let planSelections = new Set();
@@ -757,23 +759,48 @@ let expandedSubs = new Set();
 let planMode = false; // 是否在规划选择模式
 
 // 多重存储备份，防止 iOS PWA 更新时丢失数据
-const BACKUP_KEYS = [STORAGE_KEY, 'personalos_backup_1', 'personalos_backup_2', 'personalos_global'];
 
 function loadState() {
-  // 尝试从多个位置读取数据
+  // 第一优先：读当前 STORAGE_KEY
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.categories && parsed.categories.length > 0) return parsed;
+    }
+  } catch(e) {}
+  // 第二优先：扫描所有旧 key
   for (const key of BACKUP_KEYS) {
+    if (key === STORAGE_KEY) continue;
     try {
       const saved = localStorage.getItem(key);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.categories && parsed.categories.length > 0) {
-          // 版本不同也兼容，只要数据结构有效就用
+          // 找到旧数据，迁移到新 key
+          localStorage.setItem(STORAGE_KEY, saved);
           return parsed;
         }
       }
     } catch(e) {}
   }
-  // 尝试从 sessionStorage 恢复
+  // 第三优先：扫描所有 personalos 开头的 key
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('personalos') && key !== STORAGE_KEY) {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.categories && parsed.categories.length > 0) {
+            localStorage.setItem(STORAGE_KEY, saved);
+            return parsed;
+          }
+        }
+      }
+    }
+  } catch(e) {}
+  // 最后兜底：sessionStorage
   try {
     const session = sessionStorage.getItem(STORAGE_KEY);
     if (session) {
