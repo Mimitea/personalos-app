@@ -86,7 +86,8 @@ body { min-height: 100vh; display: flex; justify-content: center; }
   letter-spacing: -0.3px;
 }
 .app-title .title-icon { font-size: 26px; }
-.app-title .title-img { width: 28px; height: 28px; vertical-align: middle; margin-left: auto; }
+.app-title .title-img { width: 28px; height: 28px; vertical-align: middle; margin-left: auto; cursor: pointer; transition: opacity 0.2s; }
+.app-title .title-img:active { opacity: 0.6; }
 .app-subtitle {
   font-size: 13px;
   color: var(--text-soft);
@@ -538,25 +539,6 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast .toast-icon { color: var(--pink-primary); }
 
-/* 备份按钮 */
-.backup-fab {
-  position: fixed;
-  bottom: calc(20px + var(--safe-bottom));
-  right: 20px;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: var(--pink-card);
-  border: 1.5px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  color: var(--text-soft);
-  cursor: pointer;
-  z-index: 60;
-  box-shadow: var(--shadow-soft);
-  transition: all 0.2s;
-}
-.backup-fab:active { transform: scale(0.9); }
-
 /* 备份弹窗 */
 .backup-modal {
   position: fixed;
@@ -630,7 +612,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
     <div class="app-title">
       <span class="title-icon">🍓</span>
       <span>暑假计划</span>
-      <img src="./icons/pixel/png/title.png" alt="title" class="title-img">
+      <img src="./icons/pixel/png/title.png" alt="title" class="title-img" onclick="openBackup()">
     </div>
     <div class="app-subtitle" id="dateSubtitle">加载中</div>
   </div>
@@ -688,9 +670,6 @@ body { min-height: 100vh; display: flex; justify-content: center; }
   <div class="bottom-bar" id="bottomBar">
     <button class="action-btn" id="actionBtn">确认规划</button>
   </div>
-
-  <!-- 备份恢复按钮 -->
-  <div class="backup-fab" id="backupBtn" onclick="openBackup()">⚙</div>
 
   <!-- 备份恢复弹窗 -->
   <div class="backup-modal" id="backupModal">
