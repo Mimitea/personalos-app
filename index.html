@@ -538,6 +538,87 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast .toast-icon { color: var(--pink-primary); }
 
+/* 备份按钮 */
+.backup-fab {
+  position: fixed;
+  bottom: calc(20px + var(--safe-bottom));
+  right: 20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--pink-card);
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--text-soft);
+  cursor: pointer;
+  z-index: 60;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s;
+}
+.backup-fab:active { transform: scale(0.9); }
+
+/* 备份弹窗 */
+.backup-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.backup-modal.show { display: flex; }
+.backup-card {
+  background: var(--pink-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.backup-title { font-size: 16px; font-weight: 700; color: var(--pink-deep); }
+.backup-desc { font-size: 12px; color: var(--text-soft); margin-top: 4px; margin-bottom: 12px; }
+.backup-textarea {
+  width: 100%;
+  height: 120px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--pink-bg);
+  padding: 10px;
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-main);
+  resize: none;
+}
+.backup-textarea:focus { border-color: var(--pink-primary); }
+.backup-actions { display: flex; gap: 8px; margin-top: 12px; }
+.backup-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--pink-card);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  font-family: var(--font);
+}
+.backup-btn:active { transform: scale(0.97); }
+.backup-btn-primary { background: var(--pink-primary); color: #fff; border-color: var(--pink-primary); }
+.backup-close {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
 ::-webkit-scrollbar { width: 0; }
 </style>
 </head>
@@ -606,6 +687,23 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 
   <div class="bottom-bar" id="bottomBar">
     <button class="action-btn" id="actionBtn">确认规划</button>
+  </div>
+
+  <!-- 备份恢复按钮 -->
+  <div class="backup-fab" id="backupBtn" onclick="openBackup()">⚙</div>
+
+  <!-- 备份恢复弹窗 -->
+  <div class="backup-modal" id="backupModal">
+    <div class="backup-card">
+      <div class="backup-title">数据备份与恢复</div>
+      <div class="backup-desc">重装 App 前先备份，装完恢复数据</div>
+      <textarea class="backup-textarea" id="backupText" placeholder="备份数据会显示在这里，或在此粘贴恢复数据..."></textarea>
+      <div class="backup-actions">
+        <button class="backup-btn" onclick="exportData()">导出备份</button>
+        <button class="backup-btn backup-btn-primary" onclick="importData()">恢复数据</button>
+      </div>
+      <button class="backup-close" onclick="closeBackup()">关闭</button>
+    </div>
   </div>
 
   <div class="toast" id="toast"><span class="toast-icon">✓</span><span class="toast-text">完成</span></div>
@@ -970,6 +1068,48 @@ function showToast(text, type = 'success') {
 }
 
 // 日期
+// ============ 数据备份恢复 ============
+function openBackup() {
+  document.getElementById('backupModal').classList.add('show');
+  document.getElementById('backupText').value = '';
+}
+function closeBackup() {
+  document.getElementById('backupModal').classList.remove('show');
+}
+function exportData() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (!data) {
+    showToast('暂无数据可备份', 'warning');
+    return;
+  }
+  // 压缩成 base64 方便复制
+  const compressed = btoa(unescape(encodeURIComponent(data)));
+  document.getElementById('backupText').value = compressed;
+  document.getElementById('backupText').select();
+  showToast('已导出，请全选复制', 'success');
+}
+function importData() {
+  const text = document.getElementById('backupText').value.trim();
+  if (!text) {
+    showToast('请粘贴备份数据', 'warning');
+    return;
+  }
+  try {
+    const data = decodeURIComponent(escape(atob(text)));
+    const parsed = JSON.parse(data);
+    if (!parsed.categories) throw new Error('invalid');
+    localStorage.setItem(STORAGE_KEY, data);
+    state = parsed;
+    saveState();
+    updateTabCounts();
+    renderHomework();
+    closeBackup();
+    showToast('数据恢复成功', 'success');
+  } catch(e) {
+    showToast('数据格式错误', 'warning');
+  }
+}
+
 function updateDateSubtitle() {
   const d = new Date();
   const w = ['周日','周一','周二','周三','周四','周五','周六'];

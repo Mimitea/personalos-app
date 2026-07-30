@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v18-hint';
+const CACHE_NAME = 'personalos-v19-backup';
 const ASSETS = [
   '/personalos.html',
   './manifest.json',
