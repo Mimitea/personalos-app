@@ -8,8 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="暑假计划">
 <meta name="theme-color" content="#FFF0F5">
 <link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icons/icon-180-v2.png">
-<link rel="icon" type="image/png" href="./icons/pixel/png/title.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
 <title>暑假计划 ♡</title>
 <style>
 :root {
@@ -365,8 +364,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
   flex-shrink: 0;
 }
 .hint-box.hint-select { border-color: var(--pink-primary); }
-.hint-box.hint-done { border-color: var(--pink-light); background: #4CAF50; border-color: #4CAF50; }
-.hint-box.hint-done::after { content: '✓'; color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 700; }
+.hint-box.hint-done { border-color: #FFD9E4; }
 
 /* 输入框 */
 .add-task-row { display: flex; gap: 8px; padding: 9px 0 9px 20px; align-items: center; }
@@ -616,7 +614,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 <script>
 // ============ 初始数据 ============
 const INITIAL_DATA = {
-  version: "4.3.0",
+  version: "4.2.0",
   createdAt: "2026-07-30",
   categories: [
     {
@@ -673,7 +671,7 @@ const INITIAL_DATA = {
 };
 
 // ============ 状态 ============
-const STORAGE_KEY = 'personalos_summer_v4_3';
+const STORAGE_KEY = 'personalos_summer_v4_2';
 let state = loadState();
 let currentFilter = 'overview';
 let planSelections = new Set();
@@ -686,7 +684,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.categories && parsed.version === "4.3.0") return parsed;
+      if (parsed && parsed.categories && parsed.version === "4.2.0") return parsed;
     }
   } catch(e) {}
   return JSON.parse(JSON.stringify(INITIAL_DATA));

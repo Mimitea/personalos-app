@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v17-iconfix';
+const CACHE_NAME = 'personalos-v18-hint';
 const ASSETS = [
   '/personalos.html',
   './manifest.json',
