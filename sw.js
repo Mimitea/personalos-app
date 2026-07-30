@@ -1,10 +1,10 @@
-const CACHE_NAME = 'personalos-v16-favicon';
+const CACHE_NAME = 'personalos-v17-iconfix';
 const ASSETS = [
   '/personalos.html',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-180.png',
+  './icons/icon-192-v2.png',
+  './icons/icon-512-v2.png',
+  './icons/icon-180-v2.png',
   './icons/icon-1024.png',
   './icons/pixel/png/title.png',
   './icons/pixel/png/1.png',
