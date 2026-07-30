@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v15-github';
+const CACHE_NAME = 'personalos-v16-favicon';
 const ASSETS = [
   '/personalos.html',
   './manifest.json',
