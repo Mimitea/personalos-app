@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="暑假计划">
 <meta name="theme-color" content="#FFF0F5">
 <link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="apple-touch-icon" href="./icons/icon-180-v3.png">
+<link rel="icon" type="image/png" href="./icons/newicon.png">
 <title>暑假计划 ♡</title>
 <style>
 :root {
@@ -97,16 +98,21 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 /* ============ 筛选标签栏 ============ */
 .filter-tabs {
   display: flex;
-  gap: 8px;
+  gap: 0;
   margin-bottom: 10px;
+  background: var(--pink-card);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 4px;
 }
 .filter-tabs::-webkit-scrollbar { display: none; }
 
 .filter-tab {
-  padding: 10px 16px;
-  border-radius: 20px;
-  background: var(--pink-card);
-  border: 2px solid var(--border);
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
   color: var(--text-soft);
   font-size: 13px;
   font-weight: 600;
@@ -116,8 +122,8 @@ body { min-height: 100vh; display: flex; justify-content: center; }
   font-family: var(--font);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  flex-shrink: 0;
 }
 .filter-tab .tab-num {
   font-size: 11px;
@@ -128,7 +134,6 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 }
 .filter-tab.active {
   background: linear-gradient(135deg, var(--pink-primary), var(--pink-deep));
-  border-color: var(--pink-deep);
   color: #fff;
   box-shadow: var(--shadow);
 }
@@ -355,6 +360,12 @@ body { min-height: 100vh; display: flex; justify-content: center; }
   padding: 0 4px 12px;
   font-size: 11px;
   color: var(--text-soft);
+}
+.page-desc {
+  font-size: 12px;
+  color: var(--text-soft);
+  padding: 6px 4px 12px;
+  line-height: 1.5;
 }
 .hint-item { display: flex; align-items: center; gap: 5px; }
 .hint-box {
@@ -630,7 +641,7 @@ body { min-height: 100vh; display: flex; justify-content: center; }
     <!-- 筛选标签 -->
     <div class="filter-tabs" id="filterTabs">
       <div class="filter-tab active" data-filter="homework">暑假作业 <span class="tab-num" id="tabTodo">0</span></div>
-      <div class="filter-tab" data-filter="planned">明日计划 <span class="tab-num" id="tabPlanned">0</span></div>
+      <div class="filter-tab" data-filter="planned"><span id="plannedLabel">明日计划</span> <span class="tab-num" id="tabPlanned">0</span></div>
       <div class="filter-tab" data-filter="done">已完成 <span class="tab-num" id="tabDone">0</span></div>
     </div>
 
@@ -642,27 +653,18 @@ body { min-height: 100vh; display: flex; justify-content: center; }
 
     <!-- 各 view 只包含切换内容 -->
     <div class="view active" id="view-homework">
+      <div class="page-desc">左侧勾选加入明日计划，右侧点击标记已完成</div>
       <div class="section-title"><span>各项进度</span><span class="count" id="catCount"></span></div>
       <div id="categoriesList"></div>
     </div>
 
     <div class="view" id="view-planned">
-      <div class="plan-banner">
-        <div>
-          <div class="banner-title">明日计划</div>
-          <div class="banner-desc">这些是你计划要做的任务，点一下完成打卡</div>
-        </div>
-      </div>
+      <div class="page-desc" id="plannedPageDesc">点一下完成打卡</div>
       <div id="plannedList"></div>
     </div>
 
     <div class="view" id="view-done">
-      <div class="checkin-banner">
-        <div>
-          <div class="banner-title">已完成</div>
-          <div style="font-size:12px;color:var(--text-soft);margin-top:4px;">太棒了！这些都是你完成的任务</div>
-        </div>
-      </div>
+      <div class="page-desc">点一下取消完成，恢复为明日计划</div>
       <div id="doneList"></div>
     </div>
   </div>
@@ -1148,17 +1150,42 @@ function updateDateSubtitle() {
   document.getElementById('dateSubtitle').textContent = `${d.getMonth()+1}月${d.getDate()}日 ${w[d.getDay()]}`;
 }
 
+// ============ 根据北京时间动态更新"今日任务"/"明日计划" ============
+function isBeijingDaytime() {
+  // 北京时间 UTC+8
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const beijing = new Date(utcMs + 8 * 3600000);
+  const hour = beijing.getHours();
+  const minute = beijing.getMinutes();
+  const totalMin = hour * 60 + minute;
+  // 6:01 ~ 21:00 → 今日任务 (361 ~ 1260)
+  // 21:01 ~ 次日6:00 → 明日计划
+  return totalMin >= 361 && totalMin <= 1260;
+}
+
+function updatePlannedLabel() {
+  const isDay = isBeijingDaytime();
+  const label = isDay ? '今日任务' : '明日计划';
+  const labelEl = document.getElementById('plannedLabel');
+  if (labelEl) labelEl.textContent = label;
+  const descEl = document.getElementById('plannedPageDesc');
+  if (descEl) descEl.textContent = isDay ? '点一下完成打卡' : '选好的任务，明天来做';
+}
+
 // 初始化
 document.querySelectorAll('.filter-tab').forEach(tab => {
   tab.addEventListener('click', () => switchFilter(tab.dataset.filter));
 });
 
 updateDateSubtitle();
+updatePlannedLabel();
+setInterval(updatePlannedLabel, 60000); // 每分钟检查一次
 updateTabCounts();
 renderHomework();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 </script>
 

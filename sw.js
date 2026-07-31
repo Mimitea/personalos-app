@@ -1,11 +1,12 @@
-const CACHE_NAME = 'personalos-v22-fixdata';
+const CACHE_NAME = 'personalos-v23-dynamic-label';
 
 const ASSETS = [
   './index.html',
   './manifest.json',
-  './icons/icon-180-v2.png',
-  './icons/icon-192-v2.png',
-  './icons/icon-512-v2.png',
+  './icons/icon-180-v3.png',
+  './icons/icon-192-v3.png',
+  './icons/icon-512-v3.png',
+  './icons/newicon.png',
   './icons/pixel/png/title.png',
   './icons/pixel/png/1.png',
   './icons/pixel/png/2.png',
