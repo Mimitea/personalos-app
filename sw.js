@@ -1,4 +1,4 @@
-const CACHE_NAME = 'personalos-v23-dynamic-label';
+const CACHE_NAME = 'personalos-v24-fullbleed-icon';
 
 const ASSETS = [
   './index.html',
